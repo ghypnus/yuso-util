@@ -2,10 +2,8 @@
  * 缓存工具类
  * @author john.gao
  */
-"use strict";
 
-import NumberUtil from '../number/index';
-import {Native} from 'yuso-mobile-native';
+import NumberUtil from '../number/index'
 
 export default {
 
@@ -17,8 +15,7 @@ export default {
   set(key, val) {
     var self = this;
     if (key) {
-      Native.setCache(key, self.stringify(val));
-      // window.localStorage.setItem(key,  self.stringify(val));
+      window.localStorage.setItem(key, self.stringify(val));
     }
   },
 
@@ -30,33 +27,10 @@ export default {
   get(key) {
     var self = this;
     if (key) {
-      //TODO 异步处理
-      var result = Native.getCache(key);
-      return self.deserialize(result);
-      // return self.deserialize(window.localStorage.getItem(key));
+      return self.deserialize(window.localStorage.getItem(key));
     } else {
       return '';
     }
-  },
-
-  /**
-   * 获取接口
-   * @param json
-   */
-  getRequestCache(json) {
-    var self = this;
-    return self.cache_interface.getInterface(json);
-  },
-
-  /**
-   * 设置接口
-   * @param json
-   * @param data
-   */
-  setRequestCache(json, data) {
-    var self = this;
-    self.cache_interface.setInterface(json, data);
-
   },
 
   /**
@@ -77,8 +51,7 @@ export default {
    * @returns {*}
    */
   remove(key) {
-    Native.removeCache(key);
-    // window.localStorage.removeItem(key);
+    window.localStorage.removeItem(key);
   },
 
   /**
