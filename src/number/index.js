@@ -21,5 +21,12 @@ export default {
       var tempNumber = parseInt((numberRound1 * Math.pow(10, roundDigit) + 0.5)) / Math.pow(10, roundDigit);
       return -tempNumber;
     }
+  },
+  thousands(value) {
+    if (Number.isInteger(value)) {
+      return String(value).replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
+    } else {
+      return Number(value).toLocaleString();
+    }
   }
 }

@@ -4,3 +4,4 @@ src
 .gitignore
 .gitattributes
 rollup.config.js
+.DS_Store
