@@ -187,7 +187,7 @@ export default {
    * @param {Function} func 函数
    * @param {Object} opts 自定义参数
    */
-  deepFind(list, func, opts = {}) {
+  deepFind(list = [], func, opts = {}) {
     var childrenKey = opts.childrenKey || 'children';
     let result = null;
     var __deepFind = (list) => {

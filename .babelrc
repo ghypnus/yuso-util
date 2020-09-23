@@ -1,7 +1,5 @@
 {
   "presets": [
-    "es2015-rollup" , 
-    "stage-0"
-  ],
-  "plugins": ["external-helpers"]
+    "@babel/preset-react"
+  ]
 }

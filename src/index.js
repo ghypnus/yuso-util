@@ -7,3 +7,4 @@ export { default as StoreUtil } from './store/index';
 export { default as ValidUtil } from './valid/index';
 export {default as LogUtil } from './log/index';
 export { default as ElementUtil } from './element/index';
+export { default as RenderUtil } from './render/index';

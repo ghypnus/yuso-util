@@ -2,7 +2,7 @@
  * rollup配置文件
  */
 import babel from 'rollup-plugin-babel'
-import { uglify } from 'rollup-plugin-uglify'
+import { terser } from 'rollup-plugin-terser'
 import license from "rollup-plugin-license"
 
 export default [{
@@ -29,13 +29,13 @@ export default [{
       banner: getBanner(),
     }),
     babel(getBabel()),
-    uglify()
+    terser()
   ],
   external: getExternal()
 }]
 
 function getExternal() {
-  return ['yuso-mobile-native']
+  return ['uuid', 'react']
 }
 /**
  * banner信息
