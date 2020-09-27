@@ -47,9 +47,10 @@ export default {
       let children = null;
       const isRenderChildList = this.isRenderChildList(comp.actions);
       if (comp.childList && isRenderChildList) {
-        children = comp.childList.map(childComp => {
+        const cr = comp.childList.map(childComp => {
           return this.recurrenceRender(components, childComp, extraData);
-        })
+        });
+        children = cr.length === 1 ? cr[0] : cr; 
       }
       if (comp.actions) dealActions(this, components, comp, extraData);
       let Comp = null;
@@ -60,17 +61,20 @@ export default {
       }
 
       const compData = { ...comp };
+      
       const {
         prefixCls,
+        type,
         loading,
         reload,
         parent,
         childList,
         actions,
-        ...restProps } = compData;
+        props = {},
+        ...restCompProps } = compData;
       return <Comp
-        {...restProps}
-        {...comp.props}>
+        {...restCompProps}
+        {...props}>
         {children}
       </Comp>
     }

@@ -3,7 +3,7 @@
  * @author john.gao
  * @date 2020/09/22
  */
-import { getDeptVal, getRootComponent, getComponent } from './util';
+import { getDeptVal, getRootComponent, getComponent, isEvent } from './util';
 /**
  * 处理类型为`属性`的动作
  * @param {Object} comp 组件
@@ -24,7 +24,12 @@ const dealProps = (comp, action, val, extraData) => {
                 if (typeof value === 'object') {
                     p[k] = { ...p[k], ...value }
                 } else if (typeof value === 'function') {
-                    p[k] = value(val)
+                    const r = value(val);
+                    if (typeof r === 'object') {
+                        p[k] = { ...p[k], ...r }
+                    } else {
+                        p[k] = r;
+                    }
                 } else {
                     p[k] = value;
                 }
@@ -57,7 +62,7 @@ const dealInterface = (comp, action = {}, val, extraData) => {
     let newParams = { ...params };
     if (method) {
         if (typeof method === 'function') {
-            newParams = { ...newParams, ...method({ ...val, ...extraData })};
+            newParams = { ...newParams, ...method({ ...val, ...extraData }) };
         }
     }
     axios[type](url, {
@@ -67,7 +72,12 @@ const dealInterface = (comp, action = {}, val, extraData) => {
             actions.map(ac => {
                 switch (ac.type) {
                     case 'props':
-                        dealProps(comp, ac);
+                        dealProps(comp, ac, val, extraData);
+                        break;
+                    case 'function':
+                        ac.method();
+                        break;
+                    default:
                         break;
                 }
             })
@@ -83,31 +93,59 @@ const dealInterface = (comp, action = {}, val, extraData) => {
  * @param {Object} extraData 额外的参数
  */
 export const dealActions = (target, components, comp, extraData) => {
-    const { actions, props, type, ...restProps } = comp;
+    const { actions, type, ...restProps } = comp;
+    if(!comp.props) comp.props = {};
+
     actions.map(action => {
         const { actionType, type } = action;
         if (type === 'render') {
             comp[actionType] = (text, record, index) => {
-                return target.recurrenceRender(components, {
+                //TODO 暂时通过判断有值则显示子组件
+                const { childList = [] } = restProps;
+                childList.map(child => {
+                    if (child.props && child.props.visible !== undefined) {
+                        child.props.visible = !!text
+                    }
+                });
+                const children = target.recurrenceRender(components, {
                     ...restProps, type: 'Layout'
                 }, record).props.children;
+                return [...Array.isArray(children) ? children : [children], text];
             }
         } else {
-            props[actionType] = (val) => {
+            if (actionType) {
+                const actionFn = function (val) {
+                    let args = [].slice.call(arguments).reduce((r = [], c) => {
+                        let v = isEvent(c) ? null : c;
+                        if (Array.isArray(c)) {
+                            return [...r, ...v]
+                        } else {
+                            return { ...r, ...v }
+                        }
+                    }, undefined)
+                    switch (type) {
+                        case 'props':
+                            dealProps(comp, action, args, extraData);
+                            break;
+                        case 'function':
+                            action.method();
+                            break;
+                        case 'interface':
+                            dealInterface(comp, action, args, extraData);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                comp.props[actionType] = actionFn
+            } else {
                 switch (type) {
-                    case 'props':
-                        dealProps(comp, action, val, extraData);
-                        break;
                     case 'function':
                         action.method();
                         break;
-                    case 'interface':
-                        dealInterface(comp, action, val, extraData);
-                        break;
-                    default:
-                        break;
                 }
             }
+
         }
 
     })
