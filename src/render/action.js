@@ -4,6 +4,10 @@
  * @date 2020/09/22
  */
 import { getDeptVal, getRootComponent, getComponent, isEvent } from './util';
+import React from 'react';
+import moment from 'moment';
+import { v4 } from 'uuid';
+
 /**
  * 处理类型为`属性`的动作
  * @param {Object} comp 组件
@@ -16,7 +20,7 @@ const dealProps = (comp, action, val, extraData) => {
         if (!tc) return;
         if (!tc.props) tc.props = {};
         if (typeof method === 'function') {
-            method(tc, val);
+            method(tc, { ...val, ...extraData });
         } else {
             const k = method.slice(-1)[0];
             let p = getDeptVal(tc, method.slice(0, method.length - 1));
@@ -24,7 +28,7 @@ const dealProps = (comp, action, val, extraData) => {
                 if (typeof value === 'object') {
                     p[k] = { ...p[k], ...value }
                 } else if (typeof value === 'function') {
-                    const r = value(val);
+                    const r = value(Array.isArray(val) ? val : { ...val, ...extraData });
                     if (typeof r === 'object') {
                         p[k] = { ...p[k], ...r }
                     } else {
@@ -57,7 +61,10 @@ const dealProps = (comp, action, val, extraData) => {
  * @param {Object} action 动作
  */
 const dealInterface = (comp, action = {}, val, extraData) => {
-    const { value, actions } = action;
+    const { condition, value, actions } = action;
+    if (condition && !condition(val)) {
+        return;
+    }
     const { url, method, type = 'post', params = {} } = value;
     let newParams = { ...params };
     if (method) {
@@ -94,23 +101,32 @@ const dealInterface = (comp, action = {}, val, extraData) => {
  */
 export const dealActions = (target, components, comp, extraData) => {
     const { actions, type, ...restProps } = comp;
-    if(!comp.props) comp.props = {};
+    const { childList = [], ellipsis } = comp;
+    if (!comp.props) comp.props = {};
 
     actions.map(action => {
-        const { actionType, type } = action;
+        const { actionType, type, value = {} } = action;
         if (type === 'render') {
             comp[actionType] = (text, record, index) => {
-                //TODO 暂时通过判断有值则显示子组件
-                const { childList = [] } = restProps;
-                childList.map(child => {
-                    if (child.props && child.props.visible !== undefined) {
-                        child.props.visible = !!text
+                let newText = text;
+                if (text) {
+                    if(value.type === 'function') {
+                        newText = new Function('data', 'moment', value.value)(text, moment);
                     }
-                });
+                    if (childList[0]) {
+                        childList[0].childList = [newText];
+                    }
+                }
                 const children = target.recurrenceRender(components, {
                     ...restProps, type: 'Layout'
                 }, record).props.children;
-                return [...Array.isArray(children) ? children : [children], text];
+                const newChildren = Array.isArray(children) ? children : [children]
+                return ellipsis ? [...newChildren, <components.Tooltip
+                    key={v4()}
+                    title={newText}
+                    placement="topLeft">
+                    {newText}
+                </components.Tooltip>] : newChildren;
             }
         } else {
             if (actionType) {

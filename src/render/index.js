@@ -43,40 +43,54 @@ export default {
    */
   recurrenceRender(components, comp, extraData) {
     if (!components || !comp) return null;
+    const compData = { ...comp };
+    const {
+      prefixCls,
+      type,
+      loading,
+      reload,
+      parent,
+      childList,
+      actions,
+      visible = true,
+      props = {},
+      ...restCompProps } = compData;
+
     if (typeof comp === 'object') {
       let children = null;
-      const isRenderChildList = this.isRenderChildList(comp.actions);
-      if (comp.childList && isRenderChildList) {
-        const cr = comp.childList.map(childComp => {
-          return this.recurrenceRender(components, childComp, extraData);
-        });
-        children = cr.length === 1 ? cr[0] : cr; 
-      }
-      if (comp.actions) dealActions(this, components, comp, extraData);
-      let Comp = null;
-      if (typeof comp.type === 'object') {
-        Comp = getDeptVal(components, comp.type);
-      } else {
-        Comp = components[comp.type];
-      }
+      let isVisible = true;
+      const isRenderChildList = this.isRenderChildList(actions);
+      if (childList && isRenderChildList) {
+        if (Array.isArray(childList)) {
+          const cr = childList.map(childComp => {
+            return this.recurrenceRender(components, childComp, extraData);
+          });
+          children = cr.length === 1 ? cr[0] : cr;
+        } else if (typeof childList === 'function') {
 
-      const compData = { ...comp };
-      
-      const {
-        prefixCls,
-        type,
-        loading,
-        reload,
-        parent,
-        childList,
-        actions,
-        props = {},
-        ...restCompProps } = compData;
-      return <Comp
+        }
+      }
+      if (actions) dealActions(this, components, comp, extraData);
+      if (typeof visible === 'function') {
+        isVisible = visible(extraData);
+      }
+      let newProps = { ...props };
+      Object.keys(newProps).map(key => {
+        if (newProps[key].type === 'function') {
+          newProps[key] = new Function('data', newProps[key].value)(extraData);
+        }
+      })
+      let Comp = null;
+      if (typeof type === 'object') {
+        Comp = getDeptVal(components, type);
+      } else {
+        Comp = components[type];
+      }
+      return isVisible ? <Comp
         {...restCompProps}
-        {...props}>
+        {...newProps}>
         {children}
-      </Comp>
+      </Comp> : null;
     }
     return comp;
   }
