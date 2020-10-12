@@ -110,8 +110,8 @@ export const dealActions = (target, components, comp, extraData) => {
             comp[actionType] = (text, record, index) => {
                 let newText = text;
                 if (text) {
-                    if(value.type === 'function') {
-                        newText = new Function('data', 'moment', value.value)(text, moment);
+                    if (value.type === 'function') {
+                        newText = new Function('data', 'moment', value.value)(record, moment);
                     }
                     if (childList[0]) {
                         childList[0].childList = [newText];
@@ -126,15 +126,17 @@ export const dealActions = (target, components, comp, extraData) => {
                     title={newText}
                     placement="topLeft">
                     {newText}
-                </components.Tooltip>] : newChildren;
+                </components.Tooltip>] : newChildren.length > 0 ? newChildren: newText;
             }
         } else {
             if (actionType) {
-                const actionFn = function (val) {
-                    let args = [].slice.call(arguments).reduce((r = [], c) => {
+                const actionFn = function () {
+                    let args = [].slice.call(arguments).reduce((r, c) => {
                         let v = isEvent(c) ? null : c;
                         if (Array.isArray(c)) {
-                            return [...r, ...v]
+                            return [...r ? r : [], ...v]
+                        } else if (typeof c === 'boolean') {
+                            return c;
                         } else {
                             return { ...r, ...v }
                         }
