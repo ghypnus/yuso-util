@@ -7,6 +7,7 @@ import { getDeptVal, getRootComponent, getComponent, isEvent } from './util';
 import React from 'react';
 import moment from 'moment';
 import { v4 } from 'uuid';
+import { message } from 'antd';
 
 /**
  * 处理类型为`属性`的动作
@@ -82,7 +83,7 @@ const dealInterface = (comp, action = {}, val, extraData) => {
                         dealProps(comp, ac, val, extraData);
                         break;
                     case 'function':
-                        ac.method();
+                        new Function('message', ac.value)(message);
                         break;
                     default:
                         break;
@@ -146,7 +147,7 @@ export const dealActions = (target, components, comp, extraData) => {
                             dealProps(comp, action, args, extraData);
                             break;
                         case 'function':
-                            action.method();
+                            new Function(action.value);
                             break;
                         case 'interface':
                             dealInterface(comp, action, args, extraData);
