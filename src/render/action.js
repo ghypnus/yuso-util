@@ -20,7 +20,7 @@ const dealProps = (comp, action, val, extraData) => {
         if (!tc) return;
         if (!tc.props) tc.props = {};
         if (typeof method === 'function') {
-            method(tc, { ...val, ...extraData });
+            method(tc, Array.isArray(val) ? val : { ...val, ...extraData });
         } else {
             const k = method.slice(-1)[0];
             let p = getDeptVal(tc, method.slice(0, method.length - 1));
