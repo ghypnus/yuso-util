@@ -27,7 +27,12 @@ const dealProps = (comp, action, val, extraData) => {
             let p = getDeptVal(tc, method.slice(0, method.length - 1));
             if (value !== undefined) {
                 if (typeof value === 'object') {
-                    p[k] = { ...p[k], ...value }
+                    if (value.type === 'function') {
+                        let t = Array.isArray(val) ? val : { ...val, ...extraData };
+                        new Function(k, 'data', value.value)(p[k], t);
+                    } else {
+                        p[k] = { ...p[k], ...value }
+                    }
                 } else if (typeof value === 'function') {
                     const r = value(Array.isArray(val) ? val : { ...val, ...extraData });
                     if (typeof r === 'object') {
@@ -127,7 +132,7 @@ export const dealActions = (target, components, comp, extraData) => {
                     title={newText}
                     placement="topLeft">
                     {newText}
-                </components.Tooltip>] : newChildren.length > 0 ? newChildren: newText;
+                </components.Tooltip>] : newChildren.length > 0 ? newChildren : newText;
             }
         } else {
             if (actionType) {
