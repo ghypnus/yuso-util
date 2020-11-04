@@ -106,7 +106,7 @@ const dealInterface = (comp, action = {}, val, extraData) => {
  * @param {Object} extraData 额外的参数
  */
 export const dealActions = (target, components, comp, extraData) => {
-    const { actions, type, ...restProps } = comp;
+    const { showLabel, actions, type, ...restProps } = comp;
     const { childList = [], ellipsis } = comp;
     if (!comp.props) comp.props = {};
 
@@ -115,10 +115,10 @@ export const dealActions = (target, components, comp, extraData) => {
         if (type === 'render') {
             comp[actionType] = (text, record, index) => {
                 let newText = text;
-                if (text) {
-                    if (value.type === 'function') {
-                        newText = new Function('data', 'moment', value.value)(record, moment);
-                    }
+                if (value.type === 'function') {
+                    newText = new Function('data', 'moment', value.value)(record, moment);
+                }
+                if (showLabel) {
                     if (childList[0]) {
                         childList[0].childList = [newText];
                     }
