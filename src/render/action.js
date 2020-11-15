@@ -16,7 +16,11 @@ import { message } from 'antd';
  */
 const dealProps = (comp, action, val, extraData) => {
     const rc = getRootComponent(comp);
-    action.value.map(({ method, key, type, value }) => {
+    action.value.map(({ method, key, type, value, actions }) => {
+        if (type === 'function') {
+            new Function('message', value)(message);
+            return;
+        }
         const tc = getComponent(comp, key, type);
         if (!tc) return;
         if (!tc.props) tc.props = {};
