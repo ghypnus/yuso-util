@@ -79,12 +79,16 @@ const dealInterface = (comp, action = {}, val, extraData) => {
     let newParams = { ...params };
     if (method) {
         if (typeof method === 'function') {
-            newParams = { ...newParams, ...method({ ...val, ...extraData }) };
+            newParams = {
+                ...newParams, ...method({ ...val, ...extraData }, comp, {
+                    getComponent
+                })
+            };
         }
     }
     axios[type](url, {
         ...newParams
-    }).then(() => {
+    }).then(res => {
         if (actions) {
             actions.map(ac => {
                 switch (ac.type) {
@@ -92,7 +96,7 @@ const dealInterface = (comp, action = {}, val, extraData) => {
                         dealProps(comp, ac, val, extraData);
                         break;
                     case 'function':
-                        new Function('message', ac.value)(message);
+                        new Function('message', 'res', ac.value)(message, res);
                         break;
                     default:
                         break;
