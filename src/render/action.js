@@ -71,12 +71,17 @@ const dealProps = (comp, action, val, extraData) => {
  * @param {Object} action 动作
  */
 const dealInterface = (comp, action = {}, val, extraData) => {
-    const { condition, value, actions } = action;
+    const { condition, value, actions, loading } = action;
     if (condition && !condition(val)) {
         return;
     }
     const { url, method, type = 'post', params = {} } = value;
     let newParams = { ...params };
+    if (loading) {
+        comp.props.loading = true;
+        const rc = getRootComponent(comp);
+        rc.reload(rc);
+    }
     if (method) {
         if (typeof method === 'function') {
             newParams = {
