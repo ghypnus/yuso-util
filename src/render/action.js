@@ -28,7 +28,7 @@ const dealProps = (comp, action, val, extraData) => {
         if (!tc) return;
         if (!tc.props) tc.props = {};
         if (typeof method === 'function') {
-            method(tc, Array.isArray(val) ? val : { ...val, ...extraData });
+            method(tc, Array.isArray(val) ? val : typeof val == 'object' ?  { ...val, ...extraData } : val);
         } else {
             const k = method.slice(-1)[0];
             let p = getDeptVal(tc, method.slice(0, method.length - 1));
@@ -157,10 +157,10 @@ export const dealActions = (target, components, comp, extraData) => {
                         let v = isEvent(c) ? null : c;
                         if (Array.isArray(c)) {
                             return [...r ? r : [], ...v]
-                        } else if (typeof c === 'boolean') {
-                            return c;
-                        } else {
+                        } else if (typeof c === 'object') {
                             return { ...r, ...v }
+                        } else {
+                            return c;
                         }
                     }, undefined)
                     switch (type) {
