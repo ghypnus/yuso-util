@@ -29,21 +29,21 @@ export default {
     var self = this;
     if (!dataList || !dataList.length) return [];
     var resultList = [];
-    dataList.map(function(dataItem) {
+    dataList.map(function (dataItem) {
       var mList = [];
       var keyList = Object.keys(dataItem);
-      keyList = keyList.map(function(item) {
+      keyList = keyList.map(function (item) {
         return {
-          index: headList.findIndex(function(headItem) {
+          index: headList.findIndex(function (headItem) {
             return headItem.field === item
           }),
           key: item
         }
       })
-      keyList.sort(function(oldV, newV) {
+      keyList.sort(function (oldV, newV) {
         return oldV.index - newV.index
       })
-      keyList.map(function(item) {
+      keyList.map(function (item) {
         var key = item.key;
         var headItem = self.getItemByKey(headList, key);
         var resultItem = headItem != null ? Object.assign(headItem, {
@@ -51,8 +51,8 @@ export default {
           extra: dataItem[key],
           extraV: dataItem[key + '-v'] || ''
         }) : {
-          extra: dataItem[key]
-        };
+            extra: dataItem[key]
+          };
         mList.push(resultItem)
       })
       resultList.push(mList);
@@ -68,7 +68,7 @@ export default {
    */
   convertDataToList(dataList, keyF, valueF) {
     if (!dataList || !dataList.length) return [];
-    return dataList.map(function(dataItem) {
+    return dataList.map(function (dataItem) {
       return {
         label: dataItem[keyF],
         value: dataItem[valueF]
@@ -132,25 +132,25 @@ export default {
     var childrenKey = opts.childrenKey || 'children';
     var valueKey = opts.valueKey || 'value';
     var labelKey = opts.labelKey || 'label';
-    var dataList = data.map(function(item) {
+    var dataList = data.map(function (item) {
       return {
         [valueKey]: item[idKey],
         [labelKey]: item[nameKey],
         [parentKey]: item[parentKey]
       }
     })
-    var __recurrenceList = function(list) {
-      return list.map(function(item) {
-        var childList = dataList.filter(function(child) {
+    var __recurrenceList = function (list) {
+      return list.map(function (item) {
+        var childList = dataList.filter(function (child) {
           return child[parentKey] === item[valueKey];
         });
         var array = __recurrenceList(childList);
         return array.length > 0 ? Object.assign({}, item, { path: [], [childrenKey]: array }) : item;
       })
     }
-    var result = dataList.filter(function(item) {
+    var result = dataList.filter(function (item) {
       return item[parentKey] === '';
-    }).map(function(item) {
+    }).map(function (item) {
       return Object.assign({}, item, { path: [item[valueKey]] })
     })
     return __recurrenceList(result);
@@ -168,8 +168,8 @@ export default {
     var idKey = opts.idKey || 'id';
     var parentKey = opts.parentKey || 'parentId';
     var result = [];
-    var __recurrenceList = function(list, val) {
-      var item = list.find(function(obj) {
+    var __recurrenceList = function (list, val) {
+      var item = list.find(function (obj) {
         return obj[idKey] === val
       })
       result.unshift(item[idKey]);
@@ -212,7 +212,7 @@ export default {
    * @param {Any} val 值
    * @param {Object} opts 自定义参数
    */
-  deepFindParent(list, key, val, opts = {}){
+  deepFindParent(list, key, val, opts = {}) {
     var childrenKey = opts.childrenKey || 'children';
     let result = null;
     var __deepFindParent = array => {
@@ -238,12 +238,12 @@ export default {
    * @param {Object} b
    * @param {Object} opts 自定义参数
    */
-  deepSwap(list, from, target, opts= {}) {
+  deepSwap(list, from, target, opts = {}) {
     let fromParent = this.deepFindParent(list, '__objectId__', from, opts);
     let targetParent = this.deepFindParent(list, '__objectId__', target, opts);
     fromParent = Array.isArray(fromParent) ? fromParent : fromParent.children;
     targetParent = Array.isArray(targetParent) ? targetParent : targetParent.children;
-    let fromIdx = fromParent.findIndex(o=> o.__objectId__ === from);
+    let fromIdx = fromParent.findIndex(o => o.__objectId__ === from);
     let targetIdx = targetParent.findIndex(o => o.__objectId__ === target);
     let array = fromParent.splice(fromIdx, 1);
     targetParent.splice(targetIdx, 0, array[0]);
@@ -256,10 +256,10 @@ export default {
    * @param {Object} target
    * @param {Object} opts 自定义参数
    */
-  deepContains(list, from, target, opts={}){
+  deepContains(list, from, target, opts = {}) {
     let item = this.deepFind(list, item => item.__objectId__ === from, opts);
     let array = Array.isArray(item) ? item : item.children ? item.children : [];
-    return array.map(o=>o.__objectId__).indexOf(target) !== -1
+    return array.map(o => o.__objectId__).indexOf(target) !== -1
   },
 
   /**
@@ -270,7 +270,7 @@ export default {
    */
   deepDelete(list, key, val, opts = {}) {
     let childrenKey = opts.childrenKey || 'children';
-    let __deepDelete = (array)=> {
+    let __deepDelete = (array) => {
       for (var idx = 0; idx < array.length; idx++) {
         var item = array[idx];
         if (item[key] && item[key] === val) {
@@ -288,13 +288,13 @@ export default {
    * 深拷贝 
    * @param {Any} data 
    */
-  deepClone(data){
+  deepClone(data) {
     let result = Array.isArray(data) ? [] : {};
-    for(let key in data){
-      if(data.hasOwnProperty(key)){
-        if(typeof data[key] === 'object'){
+    for (let key in data) {
+      if (data.hasOwnProperty(key)) {
+        if (typeof data[key] === 'object') {
           result[key] = this.deepClone(data[key]);
-        }else {
+        } else {
           result[key] = data[key];
         }
       }
@@ -310,7 +310,7 @@ export default {
    */
   deepFilter(list, func, opts = {}) {
     var childrenKey = opts.childrenKey || 'children';
-    var __deepFilter = function(array, func) {
+    var __deepFilter = function (array, func) {
       return array.filter((item, idx) => {
         if (item[childrenKey] && item[childrenKey].length > 0) {
           item[childrenKey] = __deepFilter(item[childrenKey], func)
@@ -330,7 +330,7 @@ export default {
   deepFilterToArray(list, func, opts = {}) {
     var childrenKey = opts.childrenKey || 'children';
     var result = [];
-    var __deepFilter = function(list, func) {
+    var __deepFilter = function (list, func) {
       for (var idx = 0; idx < list.length; idx++) {
         let item = list[idx];
         if (func(item, idx)) {
@@ -425,20 +425,42 @@ export default {
     return list.sort(__getMultiSort(sortList))
   },
   cutStringByLength(str, len, dotStr) {
-    var strlen = 0;  
-    var s = "";  
+    var strlen = 0;
+    var s = "";
     dotStr = dotStr || ''
-    for (var i = 0; i < str.length; i++) {  
-        if (str.charCodeAt(i) > 128) {  
-            strlen += 2;  
-        } else {  
-            strlen++;  
-        }  
-        s += str.charAt(i);  
-        if (strlen >= len) {  
-            return s + dotStr;  
-        }
-    }  
-    return s;    
+    for (var i = 0; i < str.length; i++) {
+      if (str.charCodeAt(i) > 128) {
+        strlen += 2;
+      } else {
+        strlen++;
+      }
+      s += str.charAt(i);
+      if (strlen >= len) {
+        return s + dotStr;
+      }
+    }
+    return s;
+  },
+  /**
+   * 节流
+   * @param {Function} func 函数
+   * @param {Number} delay 延时
+   */
+  throttle(func, delay) {
+    var timer = null;
+    var startTime = Date.now();
+    return function () {
+      var currentTime = Date.now();
+      var remaining = delay - (currentTime - startTime);
+      var context = this;
+      var args = arguments;
+      clearTimeout(timer);
+      if (remaining <= 0) {
+        func.apply(context, args);
+        startTime = Date.now();
+      } else {
+        timer = setTimeout(func, remaining);
+      }
+    }
   }
 }

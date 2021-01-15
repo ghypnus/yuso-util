@@ -51,10 +51,11 @@ export default {
       reload,
       parent,
       childList,
-      actions,
       visible = true,
       props = {},
       ...restCompProps } = compData;
+
+      let { actions } = restCompProps;
 
     if (typeof comp === 'object') {
       let children = null;

@@ -5,9 +5,9 @@
  */
 import { getDeptVal, getRootComponent, getComponent, isEvent } from './util';
 import React from 'react';
-import moment from 'moment';
 import { v4 } from 'uuid';
 import { message } from 'antd';
+import FunctionUtil from '../function/index';
 
 /**
  * 处理类型为`属性`的动作
@@ -132,7 +132,7 @@ export const dealActions = (target, components, comp, extraData) => {
             comp[actionType] = (text, record, index) => {
                 let newText = text;
                 if (value.type === 'function') {
-                    newText = new Function('data', 'moment', value.value)(record, moment);
+                    newText = FunctionUtil.newFunction(record, value.value);
                 }
                 if (showLabel) {
                     if (childList[0]) {

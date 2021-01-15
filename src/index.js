@@ -9,3 +9,4 @@ export {default as LogUtil } from './log/index';
 export { default as ElementUtil } from './element/index';
 export { default as RenderUtil } from './render/index';
 export { default as InterfaceUtil } from './interface/index';
+export { default as FunctionUtil } from './function/index';
