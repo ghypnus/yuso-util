@@ -43,35 +43,32 @@ export default {
    */
   recurrenceRender(components, comp, extraData) {
     if (!components || !comp) return null;
-    const compData = { ...comp };
-    const {
-      prefixCls,
-      type,
-      loading,
-      reload,
-      parent,
-      childList,
-      visible = true,
-      props = {},
-      ...restCompProps } = compData;
-
-      let { actions } = restCompProps;
-
     if (typeof comp === 'object') {
       let children = null;
       let isVisible = true;
-      const isRenderChildList = this.isRenderChildList(actions);
-      if (childList && isRenderChildList) {
-        if (Array.isArray(childList)) {
-          const cr = childList.map(childComp => {
+      const isRenderChildList = this.isRenderChildList(comp.actions);
+      if (comp.childList && isRenderChildList) {
+        if (Array.isArray(comp.childList)) {
+          const cr = comp.childList.map(childComp => {
             return this.recurrenceRender(components, childComp, extraData);
           });
           children = cr.length === 1 ? cr[0] : cr;
-        } else if (typeof childList === 'function') {
+        } else if (typeof comp.childList === 'function') {
 
         }
       }
-      if (actions) dealActions(this, components, comp, extraData);
+      if (comp.actions) dealActions(this, components, comp, extraData);
+      const compData = { ...comp };
+      const {
+        prefixCls,
+        type,
+        loading,
+        reload,
+        parent,
+        childList,
+        visible = true,
+        props = {},
+        ...restCompProps } = compData;
       if (typeof visible === 'function') {
         isVisible = visible(extraData);
       }
