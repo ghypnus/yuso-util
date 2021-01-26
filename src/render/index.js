@@ -68,6 +68,7 @@ export default {
         childList,
         visible = true,
         props = {},
+        ref,
         ...restCompProps } = compData;
       if (typeof visible === 'function') {
         isVisible = visible(extraData);
@@ -84,11 +85,15 @@ export default {
       } else {
         Comp = components[type];
       }
-      return isVisible ? <Comp
-        {...restCompProps}
-        {...newProps}>
-        {children}
-      </Comp> : null;
+      if (isVisible) {
+        return <Comp
+          {...restCompProps}
+          {...newProps}>
+          {children}
+        </Comp>
+      } else {
+        return null;
+      }
     }
     return comp;
   }
