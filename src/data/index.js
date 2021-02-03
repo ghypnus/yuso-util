@@ -292,7 +292,7 @@ export default {
     let result = Array.isArray(data) ? [] : {};
     for (let key in data) {
       if (data.hasOwnProperty(key)) {
-        if (typeof data[key] === 'object') {
+        if (typeof data[key] === 'object' && data[key] !== null) {
           result[key] = this.deepClone(data[key]);
         } else {
           result[key] = data[key];
