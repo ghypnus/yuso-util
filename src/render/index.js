@@ -75,7 +75,7 @@ export default {
       }
       let newProps = { ...props };
       Object.keys(newProps).map(key => {
-        if (typeof newProps[key] == 'object' && newProps[key].type === 'function') {
+        if (newProps[key] && typeof newProps[key] == 'object' && newProps[key].type === 'function') {
           newProps[key] = new Function('data', newProps[key].value)(extraData);
         }
       })

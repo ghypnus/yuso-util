@@ -28,7 +28,7 @@ const dealProps = (comp, action, val, extraData) => {
         if (!tc) return;
         if (!tc.props) tc.props = {};
         if (typeof method === 'function') {
-            method(tc, Array.isArray(val) ? val : typeof val == 'object' ?  { ...val, ...extraData } : val);
+            method(tc, Array.isArray(val) ? val : typeof val == 'object' ? { ...val, ...extraData } : val);
         } else {
             const k = method.slice(-1)[0];
             let p = getDeptVal(tc, method.slice(0, method.length - 1));
@@ -135,8 +135,14 @@ export const dealActions = (target, components, comp, extraData) => {
                     newText = FunctionUtil.newFunction(record, value.value);
                 }
                 if (showLabel) {
-                    if (childList[0]) {
-                        childList[0].childList = [newText];
+                    if (typeof showLabel === 'function') {
+                        if (childList[0]) {
+                            childList[0].childList = [showLabel(newText)];
+                        }
+                    } else {
+                        if (childList[0]) {
+                            childList[0].childList = [newText];
+                        }
                     }
                 }
                 const children = target.recurrenceRender(components, {
