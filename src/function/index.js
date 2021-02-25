@@ -4,12 +4,14 @@
  */
 import moment from 'moment';
 import NumberUtil from '../number/index';
+import DataUtil from '../data/index';
 import { message } from 'antd';
 
 const utils = {
     moment,
     message,
-    NumberUtil
+    NumberUtil,
+    DataUtil
 }
 
 export default {

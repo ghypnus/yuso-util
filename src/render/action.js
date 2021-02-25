@@ -21,7 +21,7 @@ const dealProps = (comp, action, val, extraData) => {
             return;
         }
         if (type === 'function') {
-            new Function('data', 'message', value)(val, message);
+            FunctionUtil.newFunction(Array.isArray(val) ? val : typeof val == 'object' ? { ...val, ...extraData } : val, value);
             return;
         }
         const tc = getComponent(comp, key, type);
