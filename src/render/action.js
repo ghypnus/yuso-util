@@ -6,7 +6,7 @@
 import { getDeptVal, getRootComponent, getComponent, isEvent } from './util';
 import React from 'react';
 import { v4 } from 'uuid';
-import { message } from 'antd';
+import { message, Modal } from 'antd';
 import FunctionUtil from '../function/index';
 
 /**
@@ -104,7 +104,7 @@ const dealInterface = (comp, action = {}, val, extraData) => {
                         dealProps(comp, ac, val, extraData);
                         break;
                     case 'function':
-                        new Function('message', 'res', ac.value)(message, res);
+                        new Function('message', 'Modal', 'res', ac.value)(message, Modal, res);
                         break;
                     default:
                         break;

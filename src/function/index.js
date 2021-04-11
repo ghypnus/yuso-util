@@ -5,11 +5,12 @@
 import moment from 'moment';
 import NumberUtil from '../number/index';
 import DataUtil from '../data/index';
-import { message } from 'antd';
+import { message,Modal } from 'antd';
 
 const utils = {
     moment,
     message,
+    Modal,
     NumberUtil,
     DataUtil
 }
